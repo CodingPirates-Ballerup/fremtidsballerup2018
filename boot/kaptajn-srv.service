@@ -1,0 +1,16 @@
+[Unit]
+Description=KaptajnKlo main service
+After=network.target
+
+[Service]
+WorkingDirectory=/home/pi/src/WebSocketServer
+ExecStart=/home/pi/src/WebSocketServer/WebServer.sh
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=KaptajnKlo
+User=pi
+Group=pi
+
+[Install]
+WantedBy=multi-user.target

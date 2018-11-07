@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <title>WebSocket Echo Client</title>
+    </head>
+    <body>
+        <h1>WebSocket Echo Client</h1>
+        <p>
+            <button onClick="initWebSocket();">Connect</button>
+            <button onClick="stopWebSocket();">Disconnect</button>
+            <button onClick="checkSocket();">State</button>
+        </p>
+        <p>
+            <textarea id="debugTextArea" style="width:400px;height:200px;"></textarea>
+        </p>
+        <p>
+            <input type="text" id="inputText" onkeydown="if(event.keyCode==13)sendMessage();"/>
+            <button onClick="sendMessage();">Send</button>
+        </p>
+        <p>
+            <input type="text" id="inputCmd"/>
+            <input type="text" id="inputValue"/>
+            <button onClick="sendCommand();">Send command</button>
+        </p>
+        <br>
+        <p>
+            <input id="colorpicker" type="color" value="#0000ff"/>
+            <button onClick="sendColor();">Ellen.Farve</button>
+            <button onClick="sendCmd('Ellen.Pause', 100);">Ellen.Pause</button>
+            <button onClick="sendCmd('Ellen.Prog', 3);">Ellen.Prog3</button>
+        </p>
+        <br>
+        <p>
+            <button onClick="sendCmd('forward', 100);">forward</button>
+            <button onClick="sendCmd('backward', 100);">backward</button>
+            <button onClick="sendCmd('turn.left', 45);">left</button>
+            <button onClick="sendCmd('turn.right', 45);">right</button>
+        </p>
+        
+        <script type="text/javascript" src="{{ static_url("ws_client.js")}}"></script>
+    </body>
+</html>
