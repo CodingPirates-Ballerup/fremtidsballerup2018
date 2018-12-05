@@ -1,49 +1,5 @@
-var debugTextArea = document.getElementById("debugTextArea");
-function debug(message) {
-    debugTextArea.value += message + "\n";
-    debugTextArea.scrollTop = debugTextArea.scrollHeight;
-}
-
-function sendCmd(cmd, value){
-    if ( websocket != null )
-    {
-        msg = cmd + ':' + parseInt(value)
-        sendMessageArg(msg);
-    }
-}
-
-function sendColor(){
-    var color = document.getElementById("colorpicker").value;
-    msg = 'Ellen.Farve:' + parseInt('0x' + color.substring(1))
-    sendMessageArg(msg);
-}
-
-function sendMessageArg(msg){
-    if ( websocket != null )
-    {
-        websocket.send( msg );
-        console.log( "string sent :", '"'+msg+'"' );
-    }
-}
-
-function sendCommand(){
-    var cmd = document.getElementById("inputCmd").value;
-    var value = document.getElementById("inputValue").value;
-    sendCmd(cmd, value)
-}
-
-function sendMessage() {
-    var msg = document.getElementById("inputText").value;
-    if ( websocket != null )
-    {
-        document.getElementById("inputText").value = "";
-        sendMessageArg(msg)       
-    }
-}
-
 var wsUri = "ws://" + window.location.host + "/ws";
 var websocket = null;
-
 function initWebSocket() {
     try {
         if (typeof MozWebSocket == 'function')
@@ -66,6 +22,58 @@ function initWebSocket() {
         };
     } catch (exception) {
         debug('ERROR: ' + exception);
+    }
+}
+
+function sendCmd(cmd, value)
+{
+    var intValue = parseInt(value)
+    // check that value can be converted to an integer.
+    if(Number.isNaN(intValue))
+    {
+        console.log( "Command is to long: ", '"' + msg + '"' );
+        return;
+    }
+    msg = cmd + ':' + parseInt(value)
+    // check for maximum string length (18 bytes, limited by the micro:bit)
+    if(msg.length > 17 ) // 17 + termination (\n))
+    {
+        console.log( "Command is to long: ", '"' + msg + '"' );
+        return;
+    }
+    sendMessageArg(msg);
+}
+
+function OnCommandReceive(name, value)
+{
+
+}
+
+function sendColor(){
+    var color = document.getElementById("colorpicker").value;
+    sendCmd('E.F', parseInt('0x' + color.substring(1)))
+}
+
+function sendMessageArg(msg){
+    if ( websocket != null )
+    {
+        websocket.send( msg );
+        console.log( "string sent :", '"'+msg+'"' );
+    }
+}
+
+function sendCommand(){
+    var cmd = document.getElementById("inputCmd").value;
+    var value = document.getElementById("inputValue").value;
+    sendCmd(cmd, value)
+}
+
+function sendMessage() {
+    var msg = document.getElementById("inputText").value;
+    if ( websocket != null )
+    {
+        document.getElementById("inputText").value = "";
+        sendMessageArg(msg)
     }
 }
 
@@ -103,4 +111,10 @@ function checkSocket() {
     } else {
         debug("WebSocket is null");
     }
+}
+
+var debugTextArea = document.getElementById("debugTextArea");
+function debug(message) {
+    debugTextArea.value += message + "\n";
+    debugTextArea.scrollTop = debugTextArea.scrollHeight;
 }

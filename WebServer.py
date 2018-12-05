@@ -20,6 +20,7 @@ connections = []
 #Serial port
 ser_port = None
 ser_portName = "/dev/ttyACM0"
+#ser_portName = "COM6"
 
 def OpenSerialPort(portname):
   global ser_port
@@ -42,7 +43,7 @@ def WriteSerialMsg(message):
     asciiMsg = str(message + '\n')
     ser_port.write(asciiMsg.encode())
     print(asciiMsg)
-      
+
 class MainHandler(tornado.web.RequestHandler):
   def get(self):
      print ("[HTTP](MainHandler) User Connected.")
@@ -52,11 +53,14 @@ class WSHandler(tornado.websocket.WebSocketHandler):
   def open(self):
     print ('[WS] Connection was opened.')
     connections.append(self)
- 
+
+  # def check_origin(self):
+  #   return True
+
   def on_message(self, message):
     WriteSerialMsg(message)
     for con in connections:
-        con.write_message(u"cmd: " + message)
+      con.write_message(u"cmd: " + message)
     print ('[WS] Incoming message:'), message
 
   def on_close(self):
@@ -64,18 +68,33 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     connections.remove(self)
 
 application = tornado.web.Application([
+  (r'/index.html', MainHandler),
   (r'/', MainHandler),
   (r'/ws', WSHandler),
   ], **settings)
 
 
+def ParseCommands(cmdString):
+  moreToParse = True
+  while moreToParse:
+    idx = cmdString.find('\n')
+    if idx != -1:
+      cmd = cmdString[0: idx].strip()
+      cmdString = cmdString[idx+1:]
+      for con in connections: # send incomming cmd to all connected clients.
+        con.write_message(cmd)
+    else:
+      moreToParse = False
+  return cmdString
+
+txtBuffer = ""
 def Callback():
+  global txtBuffer
   if ser_port != None and ser_port.is_open:
     numChar = ser_port.inWaiting()
     if numChar > 0:
-      message = ser_port.read(numChar)
-      for con in connections:
-        con.write_message(u"- Received: " + message)
+      message = ser_port.read(numChar).decode()  # Read characters from the serial port
+      txtBuffer = ParseCommands(txtBuffer + message) # Try to parse commands.
 
 if __name__ == "__main__":
     try:
@@ -83,11 +102,10 @@ if __name__ == "__main__":
         http_server = tornado.httpserver.HTTPServer(application)
         http_server.listen(PORT)
         main_loop = tornado.ioloop.IOLoop.current()
-        cb = tornado.ioloop.PeriodicCallback(Callback, 1000)
+        cb = tornado.ioloop.PeriodicCallback(Callback, 500)
         cb.start()
         print ("Tornado Server started")
         main_loop.start()
-
     except:
         print ("Exception triggered - Tornado Server stopped.")
 
