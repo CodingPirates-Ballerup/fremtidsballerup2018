@@ -1,2 +1,2 @@
 #!/bin/sh
-sudo python WebServer.py
+sudo -E python WebServer.py

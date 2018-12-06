@@ -59,8 +59,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
   def on_message(self, message):
     WriteSerialMsg(message)
-    for con in connections:
-      con.write_message(u"cmd: " + message)
+    # for con in connections:
+    #   con.write_message(u"cmd: " + message)
     print ('[WS] Incoming message:'), message
 
   def on_close(self):

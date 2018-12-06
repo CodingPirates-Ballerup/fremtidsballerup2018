@@ -1,48 +1,79 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>WebSocket Echo Client</title>
-    </head>
-    <body>
-        <h1>WebSocket Echo Client</h1>
-        <p>
-            <button onClick="initWebSocket(CommandRecieved);">Connect</button>
-            <button onClick="stopWebSocket();">Disconnect</button>
-            <button onClick="checkSocket();">State</button>
-        </p>
-        <p>
-            <textarea id="debugTextArea" style="width:400px;height:200px;"></textarea>
-        </p>
-        <p>
-            <input type="text" id="inputText" onkeydown="if(event.keyCode==13)sendMessage();"/>
-            <button onClick="sendMessage();">Send</button>
-        </p>
-        <p>
-            <input type="text" id="inputCmd"/>
-            <input type="text" id="inputValue"/>
-            <button onClick="sendCommand();">Send command</button>
-        </p>
-        <br>
-        <p>
-            <input id="colorpicker" type="color" value="#0000ff"/>
-            <button onClick="sendColor();">Ellen.Farve</button>
-            <button onClick="sendCmd('E.D', 100);">Ellen.Delay</button>
-            <button onClick="sendCmd('E.P', 100);">Ellen.Prog 100</button>
-        </p>
-        <br>
-        <p>
-            <button onClick="sendCmd('forward', 100);">forward</button>
-            <button onClick="sendCmd('backward', 100);">backward</button>
-            <button onClick="sendCmd('turn.left', 45);">left</button>
-            <button onClick="sendCmd('turn.right', 45);">right</button>
-        </p>
-        
-        <script type="text/javascript" src="{{ static_url("ws_client.js")}}"></script>
+  <head>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-        <script type="text/javascript">
-            function CommandRecieved(name, value)
-            { 
-                console.log("CommandRecieved", name, value);
-            }
-         </script>
-    </body>
+     <!-- Compiled and minified CSS -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+     <!-- <link rel="stylesheet" href="style.css"> -->
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  </head>
+
+  <body>
+    <div class="container">
+        <div class="row">
+
+                <div class="col s6 m4">
+                        <blockquote>
+                                Server
+                        </blockquote>
+                        <a class="waves-effect waves-light btn" id="serverOn">open forbindelse</a>
+                        <a class="waves-effect waves-light btn" id="serverOff">luk forbindelse</a>
+                </div>
+            
+            <div class="col s6 m4">
+                    <blockquote>
+                            Lystræer
+                    </blockquote>
+                    <a class="waves-effect waves-light btn red" data-cmd="E.P:1" id="lightOn">Rød Orange</a>
+                    <a class="waves-effect waves-light btn" data-cmd="E.P:3">Regnbue</a>
+                    <a class="waves-effect waves-light btn green" data-cmd="E.P:4">GrønFlimmer</a>
+                    <a class="waves-effect waves-light btn" data-cmd="E.P:2">Slukker alle træer</a>
+            </div>
+            <div class="col s6 m4">
+                    <blockquote>
+                            Lystræ  
+                    </blockquote>
+                    <a class="waves-effect waves-light btn">button</a>
+                    <a class="waves-effect waves-light btn">button</a>
+                    <a class="waves-effect waves-light btn">button</a>
+                    <blockquote>
+                            Vind  
+                    </blockquote>
+                    <a class="waves-effect waves-light btn wind" data-cmd="1">button</a>
+                    <a class="waves-effect waves-light btn wind" data-cmd="5">button</a>
+                    <a class="waves-effect waves-light btn wind" data-cmd="0">button</a>
+            </div>
+            <div class="col s6 m4">
+                    <blockquote>
+                            Lystræ  
+                    </blockquote>
+                    <a class="waves-effect waves-light btn">button</a>
+                    <a class="waves-effect waves-light btn">button</a>
+                    <a class="waves-effect waves-light btn">button</a>
+                    <blockquote>
+                            Selvkørende biler  
+                    </blockquote>
+                    <a class="waves-effect waves-light btn">button</a>
+                    <a class="waves-effect waves-light btn">button</a>
+                    <a class="waves-effect waves-light btn">button</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compiled and minified JavaScript -->
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script type="text/javascript" src="{{ static_url("ws_client.js")}}"></script>
+    <script src="{{ static_url("app.js")}}"></script>
+  </body>
 </html>
+      

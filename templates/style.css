@@ -1,0 +1,31 @@
+header{
+    height: 400px;
+    background: #25A2CE no-repeat ;
+    color: white;
+}
+
+.card-panel{
+    background: #2C8098 !important;
+}
+
+footer{
+    background: #E41E26 !important;
+}
+
+.footer-copyright {
+    background: rgba(121, 0, 4, 0.692) !important;
+}
+
+.fullSection{
+    height: 400px;
+    background: green;
+}
+
+.halfSection{
+    height: 400px;
+}
+
+.halfSectionRight{
+    background: url("https://placeimg.com/830/480/animals") no-repeat !important;
+    background-size: 100% 100%;
+}
