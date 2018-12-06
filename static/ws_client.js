@@ -1,6 +1,8 @@
+var useDebugWindow = false;
 var wsUri = "ws://" + window.location.host + "/ws";
 var websocket = null;
-function initWebSocket() {
+var cmdRcvCallback = function(cmd, value){}
+function initWebSocket(cmdCallback) {
     try {
         if (typeof MozWebSocket == 'function')
             WebSocket = MozWebSocket;
@@ -13,13 +15,14 @@ function initWebSocket() {
         websocket.onclose = function (evt) {
             debug("DISCONNECTED");
         };
-        websocket.onmessage = function (evt) {
-            console.log( "Message received :", evt.data );
-            debug( evt.data );
-        };
+        websocket.onmessage = OnMsgReceive;
         websocket.onerror = function (evt) {
             debug('ERROR: ' + evt.data);
         };
+        // Register the command callback function.
+        if (typeof cmdCallback === "function") {
+            cmdRcvCallback = cmdCallback;
+        }
     } catch (exception) {
         debug('ERROR: ' + exception);
     }
@@ -31,7 +34,7 @@ function sendCmd(cmd, value)
     // check that value can be converted to an integer.
     if(Number.isNaN(intValue))
     {
-        console.log( "Command is to long: ", '"' + msg + '"' );
+        console.log( "Command value is not an integer: ", '"' + value + '"' );
         return;
     }
     msg = cmd + ':' + parseInt(value)
@@ -44,9 +47,25 @@ function sendCmd(cmd, value)
     sendMessageArg(msg);
 }
 
-function OnCommandReceive(name, value)
+function OnMsgReceive(evt)
 {
-
+    debug( evt.data );
+    var msg = String(evt.data);
+    var pos = msg.indexOf(":");
+    if(pos < 0) 
+    {
+        console.log( "Message received :", evt.data );
+        return;
+    }
+    var name = msg.substring(0,pos);
+    var value = msg.substring(pos+1);
+    var intValue = parseInt(value)
+    if(Number.isNaN(intValue))
+    {
+        console.log( "Invalid command recieved: ", '"' + msg + '"' );
+        return;
+    }
+    cmdRcvCallback(name, intValue);
 }
 
 function sendColor(){
@@ -54,7 +73,8 @@ function sendColor(){
     sendCmd('E.F', parseInt('0x' + color.substring(1)))
 }
 
-function sendMessageArg(msg){
+function sendMessageArg(msg)
+{
     if ( websocket != null )
     {
         websocket.send( msg );
@@ -62,13 +82,15 @@ function sendMessageArg(msg){
     }
 }
 
-function sendCommand(){
+function sendCommand()
+{
     var cmd = document.getElementById("inputCmd").value;
     var value = document.getElementById("inputValue").value;
     sendCmd(cmd, value)
 }
 
-function sendMessage() {
+function sendMessage() 
+{
     var msg = document.getElementById("inputText").value;
     if ( websocket != null )
     {
@@ -77,14 +99,16 @@ function sendMessage() {
     }
 }
 
-function stopWebSocket() {
+function stopWebSocket()
+{
     if (websocket)
         websocket.close();
 }
 
-function checkSocket() {
+function checkSocket()
+{
+    var stateStr;
     if (websocket != null) {
-        var stateStr;
         switch (websocket.readyState) {
             case 0: {
                 stateStr = "CONNECTING";
@@ -109,12 +133,19 @@ function checkSocket() {
         }
         debug("WebSocket state = " + websocket.readyState + " ( " + stateStr + " )");
     } else {
+        stateStr = "NOT INITIALIZED";
         debug("WebSocket is null");
     }
+    return stateStr;
 }
 
-var debugTextArea = document.getElementById("debugTextArea");
-function debug(message) {
+function debug(message)
+{
+    if(!useDebugWindow)
+    {
+        return;
+    }
+    var debugTextArea = document.getElementById("debugTextArea");
     debugTextArea.value += message + "\n";
     debugTextArea.scrollTop = debugTextArea.scrollHeight;
 }

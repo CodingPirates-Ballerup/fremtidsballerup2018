@@ -5,7 +5,7 @@
     <body>
         <h1>WebSocket Echo Client</h1>
         <p>
-            <button onClick="initWebSocket();">Connect</button>
+            <button onClick="initWebSocket(CommandRecieved);">Connect</button>
             <button onClick="stopWebSocket();">Disconnect</button>
             <button onClick="checkSocket();">State</button>
         </p>
@@ -37,5 +37,12 @@
         </p>
         
         <script type="text/javascript" src="{{ static_url("ws_client.js")}}"></script>
+
+        <script type="text/javascript">
+            function CommandRecieved(name, value)
+            { 
+                console.log("CommandRecieved", name, value);
+            }
+         </script>
     </body>
 </html>
